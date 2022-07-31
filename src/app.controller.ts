@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Render, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Render,
+  Res,
+  Session,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { Cookies } from './decorators/cookie-decorator';
@@ -14,14 +22,14 @@ export class AppController {
   }
 
   @Post('/login')
-  login(@Res({ passthrough: true }) res: Response) {
-    res.cookie('name', 'kong');
+  login(@Session() session, @Body() body) {
+    session.userId = body.userId;
     return { res: 'logined!' };
   }
 
   @Get('/user')
-  userInfo(@Cookies('name') name: string) {
-    console.log(name);
-    return { res: name };
+  userInfo(@Session() session) {
+    session.visited = session.visited + 1 || 1;
+    return { res: session };
   }
 }
